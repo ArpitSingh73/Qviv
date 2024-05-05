@@ -13,6 +13,13 @@ const connectToDb = require("./db")
 connectToDb() 
 app.use(cors())
 const secret = process.env.SECRET
+const path = require("path");
+
+
+
+
+
+
 
 
 
@@ -81,6 +88,28 @@ app.post("/login", async (req, res) => {
    return res.status(500).json({ success, userExists });
   }
 });
+
+
+
+// --------------------------deployment------------------------------
+
+const __dirname1 = path.resolve();
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname1, "/frontend/build")));
+
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(__dirname1, "frontend", "build", "index.html"))
+  );
+} else {
+  app.get("/", (req, res) => {
+    res.send("API is running..");
+  });
+}
+
+// // --------------------------deployment------------------------------
+
+
 
 
 

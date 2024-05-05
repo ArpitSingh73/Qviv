@@ -105,7 +105,7 @@ function Signup() {
       try {
         const { name, email, password, pnumber } = credentials;
         // console.log(name, email, password, pnumber, pic);
-        const response = await fetch("http://localhost:5000/signup", {
+        const response = await fetch("https://qviv.onrender.com/signup", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
