@@ -1,26 +1,24 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-
-import { useContext } from "react";
-import { AuthProvider } from "../../context/authContext";
 import { doSignInWithGoogle } from "../../firebase/auth";
 
 function Login() {
   const navigate = useNavigate();
-  const context = useContext(AuthProvider);
-  const [allErrors, setAllErrors] = useState({});
 
+  const [allErrors, setAllErrors] = useState({});
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
   });
 
+  // function for capturing the input values ------------------------
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
-    // console.log(credentials)
   };
 
+
+  // function for Firebase login by Google --------------------------
   const handleGoogleLogin = (e) => {
     e.preventDefault();
     try {
@@ -30,8 +28,8 @@ function Login() {
     }
   };
 
-  // creating a schema for form validation by Yup library --->
 
+  // creating a schema for form validation by Yup library --->
   const userSchema = Yup.object({
     email: Yup.string().required("email is required").email("Invalid format"),
     password: Yup.string()
@@ -39,7 +37,8 @@ function Login() {
       .min(5, "must be of 5 characters"),
   });
 
-  // function for for validation --->
+
+  // function for user data validation --->
   const check = async () => {
     let result = false;
     setAllErrors({});
@@ -47,7 +46,6 @@ function Login() {
       await userSchema.validate(credentials, { abortEarly: false });
       result = true;
     } catch (error) {
-      //  console.log(error);
       const errors = {};
       error.inner.forEach((err) => {
         errors[err.path] = err.message;
@@ -57,6 +55,8 @@ function Login() {
     return result;
   };
 
+
+  // function for logging in with user details -------------------
   const handleManualLogin = async () => {
     let result = await check();
     if (result) {

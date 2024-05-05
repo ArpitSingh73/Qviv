@@ -6,6 +6,8 @@ function Navbar() {
   const user = userGoogle || userManual;
   const navigate = useNavigate()
 
+
+  // function for logging users out -------------------------
   const handleLogout = () => {
     localStorage.getItem("userManual")
       ? localStorage.removeItem("userManual")

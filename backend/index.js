@@ -17,29 +17,30 @@ const path = require("path");
 
 
 
-
-
-
-
-
+// route for signing users in --------------->
 
 app.post("/signup", async (req, res) => {
   let success = false;
   let userExists = false;
   try {
     let user;
- 
-       user = await User.findOne({ email: req.body.email });
- 
+    user = await User.findOne({ email: req.body.email });
+    
+    // checking if user already exists or not ? -------------------->
     if (user) {
       userExists = true;
       return res.status(500).json({ userExists });
     }
 
- 
+    // if user does not exists then
+    //  Hash the password
+    // create new user model
+    // save to database
+    // create auth token and
+    // send the response -------------------------->
+
      const salt = await bcrypt.genSalt(10);
      const password = await bcrypt.hash(req.body.password, salt);
-  
   
      user = await User.create({
        name: req.body.name,
@@ -48,7 +49,6 @@ app.post("/signup", async (req, res) => {
        pnumber:req.body.pnumber,
        pic: req.body.result,
      });
-  
   
   const token = jwt.sign(user.id, secret);
   success = true;
@@ -60,17 +60,23 @@ app.post("/signup", async (req, res) => {
 
 
 
-
+// route for logging users in -------------------->
 app.post("/login", async (req, res) => {
   let success = false;
   let userExists = false;
   try {
     const { email } = req.body;
-    console.log("1")
+
+    // check for if user exists or not ----------->
     let user = await User.findOne({ email });
     if (!user) {
       return res.status(500).json({ success, userExists });
     }
+
+    // if user does not exists then
+    // match the password
+    // create auth token and
+    // send the response -------------------------->
 
     const checkPass = await bcrypt.compare(req.body.password, user.password);
     if (!checkPass) {
@@ -80,9 +86,7 @@ app.post("/login", async (req, res) => {
     const token = jwt.sign(user.id, secret);
     success = true;
     userExists = true;
-    return res
-      .status(201)
-      .json({ success, userExists, token: token, user });
+    return res.status(201).json({ success, userExists, token: token, user });
   } catch (error) {
     console.log(error)
    return res.status(500).json({ success, userExists });

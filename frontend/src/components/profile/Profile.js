@@ -4,8 +4,13 @@ function Profile() {
   const userManual = JSON.parse(localStorage.getItem("userManual"));
   const userGoogle = JSON.parse(localStorage.getItem("userGoogle"));
   const user = userGoogle || userManual;
+
   var posY = 0;
   var posX = 0;
+
+
+  //  function for implementing profile movements as per cursor.
+  // however, it has some bugs -----------------------------------------
   const handleMouse = (e) => {
     console.log(e);
     if (e.pageY < posY) {

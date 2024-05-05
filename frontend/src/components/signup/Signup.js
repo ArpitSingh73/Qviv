@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { doSignInWithGoogle } from "../../firebase/auth";
-import axios from "axios";
 import * as Yup from "yup";
 
 import { useNavigate } from "react-router-dom";
@@ -17,16 +16,15 @@ function Signup() {
   });
 
   const [pic, setPic] = useState("");
-  // const [user, setUser] = useState("");
 
+  // function for capturing user detsils input  --------------
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
-    // console.log(credentials)
   };
 
+  // function for capturing file inputs only --------------
   const handleFileChange = (e) => {
     setPic(e.target.files[0]);
-    // console.log(credentials.pict);
   };
 
   // creating a schema for form validation by Yup library --->
@@ -35,7 +33,11 @@ function Signup() {
     email: Yup.string().required("email is required").email("Invalid format"),
     password: Yup.string()
       .required("password is required")
-      .min(5, "must be of 5 characters"),
+      .min(5, "length must be of 5 characters"),
+    pnumber: Yup.string()
+      .required("password is required")
+      .min(10, "must be 10 digits"),
+    // pic: Yup.string().required("is Required"),
   });
 
   // function for for validation --->
@@ -47,7 +49,6 @@ function Signup() {
       await userSchema.validate(credentials, { abortEarly: false });
       result = true;
     } catch (error) {
-      //  console.log(error);
       const errors = {};
       error.inner.forEach((err) => {
         errors[err.path] = err.message;
@@ -66,9 +67,10 @@ function Signup() {
     }
   };
 
+  // function for uploading image at Cloudinary --------------->
   const postImage = async () => {
     let result = await check();
-    if (result) {
+    if (result && pic) {
       const data = new FormData();
       data.append("file", pic);
       data.append("upload_preset", "chatapp");
@@ -83,28 +85,24 @@ function Signup() {
         );
 
         const json = await res.json();
-        // console.log(json.url.toString());
-
         return json.url.toString();
       } catch (error) {
-        console.log(error);
         return false;
       }
+    } else {
+      return true;
     }
-    
-
-    // e.preventDefault();
   };
 
+  // function for logging in with user details -------------------
   const handleManualLogin = async (e) => {
     const result = await postImage();
 
-    // console.log(result);
-    console.log(credentials);
+    // Check if image is uploaded success fully ----------
     if (result) {
       try {
         const { name, email, password, pnumber } = credentials;
-        // console.log(name, email, password, pnumber, pic);
+
         const response = await fetch("https://qviv.onrender.com/signup", {
           method: "POST",
           headers: {
@@ -142,8 +140,6 @@ function Signup() {
                   >
                     <span>Continue with Google</span>
                   </div>
-
-                  {/* ------------- */}
 
                   <div className="relative">
                     <input
@@ -215,6 +211,7 @@ function Signup() {
                     >
                       P. number
                     </label>
+                    {allErrors.pnumber && <div>{allErrors.pnumber}</div>}
                   </div>
                   <div className="relative">
                     <input
