@@ -1,8 +1,11 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
+const dotenv = require('dotenv');
+dotenv.config()
+
 
 const connection = {};
 
-export const connectToDb = async () => {
+ const connectToDb = async () => {
   try {
     if (connection.isConnected) {
       console.log("Using existing connection");
@@ -12,6 +15,9 @@ export const connectToDb = async () => {
     connection.isConnected = db.connections[0].readyState;
   } catch (error) {
     console.log(error);
-    throw new Error(error);
+    // throw new Error(error); 
   }
 };
+
+
+module.exports = connectToDb
